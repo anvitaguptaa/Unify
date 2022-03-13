@@ -97,7 +97,9 @@ def initialize_db(cursor, cnx):
         else:
             print("OK")
 
-    return [cursor, cnx]
+    cursor.close()
+    cnx.close()
+    return True
 
 def main():
     connection = create_connection()

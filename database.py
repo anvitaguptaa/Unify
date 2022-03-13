@@ -3,7 +3,13 @@ from mysql.connector import errorcode
 
 DB_NAME = 'HeartBeat'
 
+# This is a dict of tables, with the key being the name of the table,
+# and the value being the actual SQL command to create the table with
+# certain information.
 TABLES = {}
+
+# music_info is being added to the TABLES which is going to be used for
+# recommending system for community based addition of songs.
 TABLES['music_info'] = (
     "CREATE TABLE `music_info` ("
     " `song_id` int(11) AUTO_INCREMENT,"
@@ -20,6 +26,9 @@ TABLES['music_info'] = (
     "  PRIMARY KEY (`song_id`)"
     ") ENGINE=InnoDB")
 
+# This adds the user_info to TABLES which is going to be used for
+# the recommending system for recommending songs based on the variance that
+# we create.
 TABLES['user_info'] = (
     "CREATE TABLE `user_info` ("
     " `user_name` char(4) ,"
@@ -37,11 +46,19 @@ TABLES['user_info'] = (
     "  PRIMARY KEY (`user_id`), UNIQUE KEY `user_name` (`user_name`)"
     ") ENGINE=InnoDB")
 
+# create_connection():
+    # returns a list containing both cnx (the connection to the DB)
+    # and a cursor (which is used to use the database commands)
+    # mysql API documentation is very good if you dont understand parts of this
+    # FYI user='root' is for local use purposes as it will work on all machines.
 def create_connection():
     cnx = mysql.connector.connect(user='root')
     cursor = cnx.cursor()
     return [cnx, cursor]
 
+# create_database(cursor):  
+    # this creates a database with name DB_NAME (variable set above)
+    # This takes in the cursor itself which is used to execute the commands.
 def create_database(cursor):
     try:
         cursor.execute(
@@ -50,6 +67,10 @@ def create_database(cursor):
         print("Failed creating database: {}".format(err))
         exit(1)
 
+# initialize_db(cursor, cnx):
+    # this is the main chunk of what is really important, and it uses both the above functions within it.
+    # this function takes in a cursor and cnx, and uses them to create the database itself, by using functions listed above.
+    # this returns the cursor and cnx yet again as a list so that we can use them in any way to populate the database through our other files.
 def initialize_db(cursor, cnx):
     try:
         cursor.execute("USE {}".format(DB_NAME))
@@ -76,14 +97,13 @@ def initialize_db(cursor, cnx):
         else:
             print("OK")
 
-    cursor.close()
-    cnx.close()
+    return [cursor, cnx]
 
 def main():
     connection = create_connection()
     cnx = connection[0]
     cursor = connection[1]
-    initialize_db(cursor, cnx)
+    return initialize_db(cursor, cnx)
 
 if __name__ == "__main__":
     main()

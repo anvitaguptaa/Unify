@@ -115,6 +115,7 @@ class User:
 
 if __name__ == '__main__':
     set_env()
-    user = User('rohan_singhvi')
+    username = input("Please enter your username: ")
+    user = User('{}'.format(username))
     user.process_user()
  

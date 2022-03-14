@@ -25,7 +25,7 @@ TABLES['music_info'] = (
     " `loudness` decimal(18, 9) ,"
     " `speechiness` decimal(18, 9) ,"
     " `valence` decimal(18, 9) ,"
-    "  PRIMARY KEY (`song_id`)"
+    "  PRIMARY KEY (`username`)"
     ") ENGINE=InnoDB")
 
 # This adds the user_info to TABLES which is going to be used for

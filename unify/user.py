@@ -62,6 +62,7 @@ class User:
         for track in tracks.items:
             tracks_arr.append(track.id)
             tracks_arr.append(track.name)
+            # analysis is the required information we are going to use to base the recommendations off of.
             analysis = spotify.track_audio_features(track.id)
             tracks_arr.append(analysis.energy)
             tracks_arr.append(analysis.tempo)
@@ -77,10 +78,15 @@ class User:
        
     def process_user(self):
         songs = self.get_top_tracks()
+        # Initialize the database.
         database.main()
+        # create the connection.
         cnx = mysql.connector.connect(user='root', database='HeartBeat')
+        # initialize the cursor.
         cursor = cnx.cursor()
-        music_data = {}        
+        # Empty dict called music_data which will be filled.
+        music_data = {} 
+        # n is required for proper indexing when filling the database with information from the list of songs       
         n = 0
         while n < 99:
             add_data = ("INSERT INTO music_info VALUES (%(song_id)s, %(song_name)s, %(username)s, %(energy)s, %(tempo)s, %(danceability)s, %(acousticness)s, %(instrumentalness)s, %(liveness)s, %(loudness)s, %(speechiness)s, %(valence)s)")
@@ -98,16 +104,26 @@ class User:
                 'speechiness': songs[n + 9],
                 'valence': songs[n + 10],
             }
+            # add_data is the sql command to add data, with values in %(key)s
+            # music data contains the key-pair values that are used to add to the db.
             cursor.execute(add_data, music_data)
+            # indexing purposes since there are 11 pieces of information attached to each song, indexing is done as such.
             n += 11
+        # Insert initial information that is not the averages for user_data.
         cursor.execute("INSERT INTO user_info (user_name, date_accessed) VALUES (%s, %s)", (self.username, str_now))
         for x in music_data:
+            # x will result in being all the keys in the dictionary, and since we already have the user_name and date in there, 
+            # we do not need this information.
             if x == 'song_id' or x == 'song_name' or x == 'username':
                 pass
             else:
-                cursor.execute("SELECT AVG({}) FROM music_info".format(x))
+                # the execute below is a SQL command that can find the average of a column in a table
+                # and we do this for all songs associated to the user.
+                cursor.execute("SELECT AVG(%s) FROM music_info WHERE username=%s", (x, self.username))
                 for value in cursor:
+                    # value itself is a tuple and was immutable, hence the change to val, which is a list.
                     val = list(value)
+                    # Inserts into the table where user_name is already set the average values we find.
                     cursor.execute("UPDATE user_info SET avg_{}=%s WHERE user_name=%s".format(x), (str(val[0]), self.username))
         cnx.commit()
 

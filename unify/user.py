@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import tekore as tk
 import configparser
 import mysql.connector

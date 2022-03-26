@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -12,8 +13,9 @@ TABLES = {}
 # recommending system for community based addition of songs.
 TABLES['music_info'] = (
     "CREATE TABLE `music_info` ("
-    " `song_id` int(11) AUTO_INCREMENT,"
-    " `song_name` varchar(30),"
+    " `song_id` varchar(30),"
+    " `song_name` varchar(100),"
+    " `username` varchar(100),"
     " `energy` decimal(18, 9) ,"
     " `tempo` decimal(18, 9) ,"
     " `danceability` decimal(18, 9) ,"
@@ -23,7 +25,7 @@ TABLES['music_info'] = (
     " `loudness` decimal(18, 9) ,"
     " `speechiness` decimal(18, 9) ,"
     " `valence` decimal(18, 9) ,"
-    "  PRIMARY KEY (`song_id`)"
+    "  PRIMARY KEY (`username`)"
     ") ENGINE=InnoDB")
 
 # This adds the user_info to TABLES which is going to be used for
@@ -31,9 +33,8 @@ TABLES['music_info'] = (
 # we create.
 TABLES['user_info'] = (
     "CREATE TABLE `user_info` ("
-    " `user_name` char(4) ,"
-    " `user_id` varchar(40) ,"
-    " `date_accessed` date ,"
+    " `user_name` varchar(40) ,"
+    " `date_accessed` datetime ,"
     " `avg_energy` decimal(18, 9) ,"
     " `avg_tempo` decimal(18, 9) ,"
     " `avg_danceability` decimal(18, 9) ,"
@@ -43,7 +44,7 @@ TABLES['user_info'] = (
     " `avg_loudness` decimal(18, 9) ,"
     " `avg_speechiness` decimal(18, 9) ,"
     " `avg_valence` decimal(18, 9) ,"
-    "  PRIMARY KEY (`user_id`), UNIQUE KEY `user_name` (`user_name`)"
+    "  UNIQUE KEY (`user_name`)"
     ") ENGINE=InnoDB")
 
 # create_connection():
